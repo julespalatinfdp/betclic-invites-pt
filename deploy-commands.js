@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 const TOKEN = process.env.DISCORD_TOKEN;
-const CLIENT_ID = '1517178158842118406'; // Même client ID que France
+const CLIENT_ID = '1521461513016180796'; // CLIENT_ID Betclic Portugal
 const GUILD_ID_PT = '1507359535013040318'; // Betclic Portugal
 
 const commands = [];
