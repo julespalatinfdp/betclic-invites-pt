@@ -4,8 +4,8 @@ const fs = require('fs');
 const path = require('path');
 
 const TOKEN = process.env.DISCORD_TOKEN;
-const CLIENT_ID = '1517178158842118406'; // À remplacer par ton client ID
-const GUILD_ID = process.env.GUILD_ID;
+const CLIENT_ID = '1517178158842118406'; // Même client ID que France
+const GUILD_ID_PT = '1507359535013040318'; // Betclic Portugal
 
 const commands = [];
 const commandsPath = path.join(__dirname, 'commands');
@@ -21,14 +21,12 @@ const rest = new REST({ version: '10' }).setToken(TOKEN);
 
 (async () => {
   try {
-    console.log('🔄 Déploiement des commandes slash...');
-
+    console.log('🔄 Déploiement des commandes slash pour Betclic Portugal...');
     await rest.put(
-      Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID),
+      Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID_PT),
       { body: commands },
     );
-
-    console.log('✅ Commandes déployées avec succès!');
+    console.log('✅ Commandes déployées avec succès pour Betclic Portugal !');
   } catch (error) {
     console.error('❌ Erreur lors du déploiement:', error);
   }
