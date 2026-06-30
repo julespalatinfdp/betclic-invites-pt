@@ -13,8 +13,8 @@ const client = new Client({
   ],
 });
 
-const GUILD_ID = process.env.GUILD_ID;
-const db = new Database('./invites.db');
+const GUILD_ID = process.env.GUILD_ID_PT || process.env.GUILD_ID;
+const db = new Database('./invites-pt.db'); // DB séparée pour Portugal
 
 // Collections pour les commandes et invites
 client.commands = new Collection();
@@ -33,17 +33,17 @@ for (const file of commandFiles) {
 // EVENT: Bot prêt
 client.on('ready', async () => {
   console.log(`✅ Bot connecté en tant que ${client.user.tag}`);
-
+  
   // Initialiser la DB
   await db.initialize();
-  console.log('📊 Base de données initialisée');
-
+  console.log('📊 Base de données initialisée (invites-pt.db)');
+  
   // Faire le snapshot initial des invites
   const guild = client.guilds.cache.get(GUILD_ID);
   if (guild) {
     try {
       const invites = await guild.invites.fetch();
-      console.log(`📸 Snapshot initial: ${invites.size} invitations détectées`);
+      console.log(`📸 Snapshot initial: ${invites.size} invitations détectées (Betclic Portugal)`);
       
       for (const [code, invite] of invites) {
         client.invites.set(code, invite.uses);
@@ -52,16 +52,17 @@ client.on('ready', async () => {
       console.error('❌ Erreur lors du snapshot des invites:', error);
     }
   }
-
+  
   // Statut du bot
-  client.user.setActivity('les invitations 🔗', { type: ActivityType.Watching });
+  client.user.setActivity('les invitations 🔗 (Portugal)', { type: ActivityType.Watching });
 });
 
 // EVENT: Nouvelle invitation créée
 client.on('inviteCreate', async (invite) => {
   if (invite.guildId !== GUILD_ID) return;
+  
   client.invites.set(invite.code, invite.uses);
-  console.log(`📌 Nouvelle invite créée: ${invite.code} (${invite.uses || 0} uses)`);
+  console.log(`📌 Nouvelle invite créée: ${invite.code} (${invite.uses || 0} uses) - Betclic Portugal`);
 });
 
 // EVENT: Nouveau membre rejoint
@@ -83,7 +84,7 @@ client.on('guildMemberAdd', async (member) => {
         if (inviter && !inviter.bot) {
           // Enregistrer dans la DB
           await db.addInvite(inviter.id, member.id);
-          console.log(`✅ ${inviter.username} a invité ${member.username}`);
+          console.log(`✅ ${inviter.username} a invité ${member.username} (Betclic Portugal)`);
         }
         
         // Mettre à jour le cache
@@ -99,10 +100,10 @@ client.on('guildMemberAdd', async (member) => {
 // EVENT: Commandes slash
 client.on('interactionCreate', async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
-
+  
   const command = client.commands.get(interaction.commandName);
   if (!command) return;
-
+  
   try {
     await command.execute(interaction, db);
   } catch (error) {
@@ -116,5 +117,4 @@ client.on('interactionCreate', async (interaction) => {
 
 // Connexion du bot
 client.login(process.env.DISCORD_TOKEN);
-
 module.exports = client;
